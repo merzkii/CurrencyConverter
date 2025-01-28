@@ -39,7 +39,7 @@ namespace CurrencyConverter.Controllers
             var convertedAmount = await _conversionService.ConvertCurrencyAsync(originCurrency, destinationCurrency, amount,date);
 
             ViewBag.ConvertedAmount = convertedAmount;
-            return View();
+            return View("index");
         }
     }
 }

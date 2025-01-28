@@ -1,55 +1,71 @@
 ﻿@model CurrencyConverter.Web.Models.ConversionViewModel
 
-<div class="row">
-    <div class="col-md-6">
-        <h2>Currency Conversion</h2>
-        <form asp-action="Convert" method="post">
-            <div class="mb-3">
-                <label asp-for="ClientName" class="form-label"></label>
-                <input asp-for="ClientName" class="form-control" />
-                <span asp-validation-for="ClientName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="PersonalNumber" class="form-label"></label>
-                <input asp-for="PersonalNumber" class="form-control" />
-                <span asp-validation-for="PersonalNumber" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="OriginCurrency" class="form-label"></label>
-                <select asp-for="OriginCurrency" class="form-select">
-                    <option value="GEL">GEL</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                    <option value="RUB">RUB</option>
-                </select>
-                <span asp-validation-for="OriginCurrency" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="DestinationCurrency" class="form-label"></label>
-                <select asp-for="DestinationCurrency" class="form-select">
-                    <option value="GEL">GEL</option>
-                    <option value="USD">USD</option>
-                    <option value="EUR">EUR</option>
-                    <option value="GBP">GBP</option>
-                    <option value="RUB">RUB</option>
-                </select>
-                <span asp-validation-for="DestinationCurrency" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Amount" class="form-label"></label>
-                <input asp-for="Amount" class="form-control" />
-                <span asp-validation-for="Amount" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Date" class="form-label"></label>
-                <input asp-for="Date" class="form-control" type="date" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary">Convert</button>
-        </form>
+@{
+    ViewData["Title"] = "Currency Converter";
+}
+
+<h2>Currency Conversion</h2>
+
+<form asp-action="Convert" method="post">
+    <div class="form-group">
+        <label asp-for="ClientName"></label>
+        <input asp-for="ClientName" class="form-control" />
+        <span asp-validation-for="ClientName" class="text-danger"></span>
     </div>
-</div>
 
+    <div class="form-group">
+        <label asp-for="PersonalNumber"></label>
+        <input asp-for="PersonalNumber" class="form-control" />
+        <span asp-validation-for="PersonalNumber" class="text-danger"></span>
+    </div>
 
+    <div class="form-group">
+        <label asp-for="OriginCurrency"></label>
+        <select asp-for="OriginCurrency" class="form-control">
+            <option value="">-- Select Currency --</option>
+            <option value="GEL">GEL</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+        </select>
+        <span asp-validation-for="OriginCurrency" class="text-danger"></span>
+    </div>
 
+    <div class="form-group">
+        <label asp-for="DestinationCurrency"></label>
+        <select asp-for="DestinationCurrency" class="form-control">
+            <option value="">-- Select Currency --</option>
+            <option value="GEL">GEL</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+        </select>
+        <span asp-validation-for="DestinationCurrency" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Amount"></label>
+        <input asp-for="Amount" class="form-control" />
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Date"></label>
+        <input asp-for="Date" class="form-control" type="date" />
+        <span asp-validation-for="Date" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Convert</button>
+</form>
+
+@if (Model?.ConvertedAmount != null)
+{
+    <h3>Conversion Result</h3>
+    <p>Converted Amount: <strong>@Model.ConvertedAmount</strong></p>
+    <p>Exchange Rate Date: <strong>@Model.ExchangeRateDate.ToString("yyyy-MM-dd")</strong></p>
+}
+
+@*@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+*@
