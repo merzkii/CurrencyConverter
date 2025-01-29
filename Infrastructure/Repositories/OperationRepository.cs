@@ -23,6 +23,10 @@ namespace Infrastructure
 
         public async Task<IEnumerable<Operation>> GetOperationsAsync()
         {
+            if (_dbContext.Operations == null)
+            {
+                throw new InvalidOperationException("The 'Operations' table is null. Ensure it exists in the database.");
+            }
             return await _dbContext.Operations
                 .AsNoTracking()
                 .ToListAsync();

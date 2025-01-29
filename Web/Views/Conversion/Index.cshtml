@@ -28,7 +28,6 @@
             <option value="EUR">EUR</option>
             <option value="RUB">RUB</option>
             <option value="GBP">GBP</option>
-            <option value="UAH">UAH</option>
         </select>
         <span asp-validation-for="OriginCurrency" class="text-danger"></span>
     </div>
@@ -42,7 +41,6 @@
             <option value="EUR">EUR</option>
             <option value="RUB">RUB</option>
             <option value="GBP">GBP</option>
-            <option value="UAH">UAH</option>
         </select>
         <span asp-validation-for="DestinationCurrency" class="text-danger"></span>
     </div>
@@ -62,14 +60,56 @@
     <button type="submit" class="btn btn-primary">Convert</button>
 </form>
 
+<hr />
+
 @if (Model?.ConvertedAmount != null)
 {
     <h3>Conversion Result</h3>
-    <p>Converted Amount: <strong>@Model.ConvertedAmount</strong></p>
-    <p>Exchange Rate Date: <strong>@Model.ExchangeRateDate.ToString("yyyy-MM-dd")</strong></p>
+    <p><strong>Converted Amount:</strong> @Model.ConvertedAmount</p>
+    <p><strong>Exchange Rate Date:</strong> @Model.ExchangeRateDate.ToString("yyyy-MM-dd")</p>
 }
 
-@*@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<hr />
+
+<h3>Conversion History</h3>
+
+@if (Model?.Operations != null && Model.Operations.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Client Name</th>
+                <th>Personal Number</th>
+                <th>From Currency</th>
+                <th>To Currency</th>
+                <th>Rate</th>
+                <th>Amount</th>
+                <th>Converted Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var operation in Model.Operations)
+            {
+                <tr>
+                    <td>@operation.ClientName</td>
+                    <td>@operation.PersonalNumber</td>
+                    <td>@operation.FromCurrency</td>
+                    <td>@operation.ToCurrency</td>
+                    <td>@operation.Rate</td>
+                    <td>@operation.Amount</td>
+                    <td>@(operation.Amount * operation.Rate)</td>
+                    <td>@operation.Date.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
-*@
+else
+{
+    <p>No conversion history available.</p>
+}
+@*
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}*@

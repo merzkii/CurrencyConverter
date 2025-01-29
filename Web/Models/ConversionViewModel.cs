@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Core.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace CurrencyConverter.Web.Models
 {
@@ -31,12 +32,14 @@ namespace CurrencyConverter.Web.Models
         [Required]
         [Display(Name = "Date")]
         [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         public decimal ConvertedAmount { get; set; }
         public DateTime ExchangeRateDate { get; set; }
 
         [Display(Name = "Rates")]
         public NbgApiClient Rate { get; set; }
+
+        public List<Operation> Operations { get; set; }
     }
 }

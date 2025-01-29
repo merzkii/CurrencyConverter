@@ -10,16 +10,16 @@ namespace CurrencyConverter.Controllers
         private readonly IConversionService _conversionService;
         private readonly IExchangeRateService _exchangeRateService;
         private readonly IExchangeRateRepository _exchangeRateRepository;
-        //private readonly IOperationRepository _operationRepository;
+        private readonly IOperationRepository _operationRepository;
         private readonly NbgApiClient _bgApiClient;
 
-        public ConversionController( IConversionService conversionService,IExchangeRateService exchangeRateService,NbgApiClient nbgApiClient, IExchangeRateRepository exchangeRateRepository)
+        public ConversionController(IOperationRepository operationRepository, IConversionService conversionService,IExchangeRateService exchangeRateService,NbgApiClient nbgApiClient, IExchangeRateRepository exchangeRateRepository)
         {
             _exchangeRateRepository = exchangeRateRepository;
             _bgApiClient = nbgApiClient;
             _conversionService = conversionService;
             _exchangeRateService = exchangeRateService;
-            //_operationRepository = operationRepository; 
+            _operationRepository = operationRepository; 
         }
 
         [HttpGet]
@@ -33,24 +33,34 @@ namespace CurrencyConverter.Controllers
             exchangeRatesTask.Wait();
             var exchangeRates = exchangeRatesTask.Result;
             await _exchangeRateRepository.AddRateAsync(exchangeRates);
-            
+            var operations=await _operationRepository.GetOperationsAsync();
             var model = new ConversionViewModel
             {
-                Rate = _bgApiClient
+                Rate = _bgApiClient,
+                Operations= (List<Core.Models.Operation>)operations
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Convert(string clientName, string personalNumber, string originCurrency, string destinationCurrency, decimal amount, DateTime date)
+        public async Task<IActionResult> Convert(string clientName, string personalNumber, string originCurrency, string destinationCurrency, decimal amount, DateTime? date)
         {
-            //var exchangeRates = await _bgApiClient.FetchExchangeRatesAsync();
-            var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName,personalNumber, originCurrency, destinationCurrency, amount,date);
-            //await _exchangeRateRepository.AddRateAsync(exchangeRates);
+            DateTime conversionDate = date ?? DateTime.Now;
+            var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName,personalNumber, originCurrency, destinationCurrency, amount,conversionDate);
             
-            ViewBag.ConvertedAmount = convertedAmount;
-            return View("index");
+            var model = new ConversionViewModel
+            {
+                ClientName = clientName,
+                PersonalNumber = personalNumber,
+                OriginCurrency = originCurrency,
+                DestinationCurrency = destinationCurrency,
+                Amount = amount,
+                Date = conversionDate,
+                ConvertedAmount = convertedAmount,
+                
+            };
+            return View("index",model);
         }
     }
 }
