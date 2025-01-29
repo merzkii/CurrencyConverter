@@ -40,6 +40,6 @@ namespace CurrencyConverter.Web.Models
         [Display(Name = "Rates")]
         public NbgApiClient Rate { get; set; }
 
-        public List<Operation> Operations { get; set; }
+        public List<OperationViewModel> Operations { get; set; }
     }
 }

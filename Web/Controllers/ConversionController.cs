@@ -34,10 +34,23 @@ namespace CurrencyConverter.Controllers
             var exchangeRates = exchangeRatesTask.Result;
             await _exchangeRateRepository.AddRateAsync(exchangeRates);
             var operations=await _operationRepository.GetOperationsAsync();
+            var operationViewModels = operations.Select(o => new OperationViewModel
+            {
+                Id = o.Id,
+                ClientName = o.ClientName,
+                PersonalNumber = o.PersonalNumber,
+                FromCurrency = o.FromCurrency,
+                ToCurrency = o.ToCurrency,
+                Amount = o.Amount,
+                ConvertedAmount=o.ConvertedAmount,
+                Date = o.Date == DateTime.MinValue ? DateTime.Today : o.Date
+            }).ToList();
+
             var model = new ConversionViewModel
             {
                 Rate = _bgApiClient,
-                Operations= (List<Core.Models.Operation>)operations
+                Operations= operationViewModels,
+                Date= DateTime.Today
             };
 
             return View(model);
@@ -49,6 +62,19 @@ namespace CurrencyConverter.Controllers
             DateTime conversionDate = date ?? DateTime.Now;
             var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName,personalNumber, originCurrency, destinationCurrency, amount,conversionDate);
             var operations = await _operationRepository.GetOperationsAsync();
+
+            var operationViewModels = operations.Select(o => new OperationViewModel
+            {
+                Id = o.Id,
+                ClientName = o.ClientName,
+                PersonalNumber = o.PersonalNumber,
+                FromCurrency = o.FromCurrency,
+                ToCurrency = o.ToCurrency,
+                Amount = o.Amount,
+                ConvertedAmount = o.ConvertedAmount,
+                Date = o.Date
+            }).ToList();
+
             var model = new ConversionViewModel
             {
                 ClientName = clientName,
@@ -58,8 +84,8 @@ namespace CurrencyConverter.Controllers
                 Amount = amount,
                 Date = conversionDate,
                 ConvertedAmount = convertedAmount,
-                Operations= (List<Core.Models.Operation>)operations
-                
+                Operations = operationViewModels
+
             };
             return View("index",model);
         }
