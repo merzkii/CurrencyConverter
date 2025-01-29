@@ -1,4 +1,5 @@
 using Application.Services;
+using Infrastructure;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IConversionService,ConversionService>();
+builder.Services.AddScoped<IOperationRepository, OperationRepository>();
 builder.Services.AddScoped<IExchangeRateService,ExchangeRateService>();
 builder.Services.AddScoped<IExchangeRateRepository, ExchangeRateRepository>();
 builder.Services.AddScoped<NbgApiClient>();

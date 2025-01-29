@@ -25,7 +25,9 @@ public class OperationConfiguration : IEntityTypeConfiguration<Operation>
         builder.Property(o => o.Date)
             .IsRequired();
         builder.Property(o => o.Amount)
-            .IsRequired()
+            .IsRequired();
+        builder.Property(o=>o.ConvertedAmount).
+            IsRequired()
             .HasColumnType("decimal(18,4)");
 
         builder.ToTable("Operations"); 

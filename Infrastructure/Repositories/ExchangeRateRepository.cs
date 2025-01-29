@@ -29,6 +29,7 @@ namespace Infrastructure.Repositories
 
         public async Task AddRateAsync(IEnumerable<ExchangeRate> exchangeRates)
         {
+
             foreach (var rate in exchangeRates)
             {
                 var existingRate = await _context.ExchangeRates

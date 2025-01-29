@@ -1,10 +1,12 @@
-﻿using Core.Models;
+﻿using Application.Services;
+using Core.Models;
 using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure
 {
-    public class OperationRepository
+    public class OperationRepository:IOperationRepository
     {
         private readonly AppDbContext _dbContext;
 
@@ -19,7 +21,7 @@ namespace Infrastructure
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Operation>> GetAllOperationsAsync()
+        public async Task<IEnumerable<Operation>> GetOperationsAsync()
         {
             return await _dbContext.Operations
                 .AsNoTracking()

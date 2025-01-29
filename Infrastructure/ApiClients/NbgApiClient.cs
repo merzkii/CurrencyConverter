@@ -32,10 +32,12 @@ public class NbgApiClient
 
                     // Deserialize the JSON response to your chosen type (CurrencyData)
                     var currencies = JsonConvert.DeserializeObject<List<CurrencyData>>(responseContent)!;
-                    exchangeRates = currencies.First().Currencies.Select(x => new ExchangeRate() { Currency = x.Code, Rate = x.Rate, Date = x.Date }).ToList();
-                    await _exchangeRateRepository.AddRateAsync(exchangeRates);
+                    exchangeRates = currencies.First().Currencies.Select(x => new ExchangeRate() { Currency = x.Code, Rate = x.Rate, Date = x.Date.Date }).ToList();
+                    //await _exchangeRateRepository.AddRateAsync(exchangeRates);
                 }
-                else{
+
+                else
+                {
                     return exchangeRates;
                 }
             }

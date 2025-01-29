@@ -15,6 +15,7 @@ namespace Core.Models
         public string ToCurrency { get; set; }
         public decimal Rate { get; set; }
         public decimal Amount { get; set; }
+        public decimal ConvertedAmount { get; set; }
         public DateTime Date { get; set; }
     }
 }

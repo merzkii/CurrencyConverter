@@ -1,6 +1,6 @@
 ﻿using Core.Models;
 
-namespace Infrastructure.Repositories
+namespace Application.Services
 {
     public interface IOperationRepository
     {
