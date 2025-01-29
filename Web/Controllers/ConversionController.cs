@@ -48,7 +48,7 @@ namespace CurrencyConverter.Controllers
         {
             DateTime conversionDate = date ?? DateTime.Now;
             var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName,personalNumber, originCurrency, destinationCurrency, amount,conversionDate);
-            
+            var operations = await _operationRepository.GetOperationsAsync();
             var model = new ConversionViewModel
             {
                 ClientName = clientName,
@@ -58,6 +58,7 @@ namespace CurrencyConverter.Controllers
                 Amount = amount,
                 Date = conversionDate,
                 ConvertedAmount = convertedAmount,
+                Operations= (List<Core.Models.Operation>)operations
                 
             };
             return View("index",model);
