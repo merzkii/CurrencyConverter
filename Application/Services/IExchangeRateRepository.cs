@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories
     public interface IExchangeRateRepository
     {
         Task<ExchangeRate?> GetRateAsync(string currency, DateTime date);
-        Task AddRateAsync(ExchangeRate rate);
+        Task AddRateAsync(IEnumerable<ExchangeRate> exchangeRates);
     }
 }
 

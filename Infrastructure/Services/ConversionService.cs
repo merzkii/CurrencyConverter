@@ -1,4 +1,6 @@
-﻿using Core.Exceptions;
+﻿using Application.Services;
+using Core;
+using Core.Exceptions;
 using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
@@ -6,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Services
+namespace Infrastructure.Services
 {
     public class ConversionService : IConversionService
     {
@@ -27,41 +29,35 @@ namespace Application.Services
         {
             var outSource = new NbgApiClient();
             var exchangeRates = await outSource.FetchExchangeRatesAsync();
-            if (originCurrency == "GEL")
+            if (exchangeRates.Any())
             {
-                if (exchangeRates.Any())
-                {
-                    var rate=exchangeRates.First(x => x.Currency == destinationCurrency).Rate;
-                    return amount / rate;
-                }
-                else
-                {
-                    var rate= await _exchangeRateService.GetExchangeRateAsync(destinationCurrency, date);
-                    return amount / rate;
-                }
+                // Find the rate for the requested currency
+                var exchangeRate = exchangeRates.FirstOrDefault(x => x.Currency == destinationCurrency);
 
-                //var rate = await _exchangeRateService.GetExchangeRateAsync(destinationCurrency, date);
-                //if (rate == null)
-                    //throw new NotFoundException("Exchange rate not found.");
-                //return amount / rate.Value;
-            }
-            else if (destinationCurrency == "GEL")
-            {
-                if (exchangeRates.Any())
+                if (exchangeRate != null)
                 {
-                    var rate = exchangeRates.First(x => x.Currency == destinationCurrency).Rate;
-                    return amount * rate;
-                }
-                else
-                {
-                    var rate = await _exchangeRateService.GetExchangeRateAsync(destinationCurrency, date);
-                    return amount * rate;
+                    // Save exchange rate in database if not already stored
+                    await _exchangeRateRepository.AddRateAsync(new ExchangeRate
+                    {
+                        Currency = exchangeRate.Currency,
+                        Rate = exchangeRate.Rate,
+                        Date = date
+                    });
+
+                    return originCurrency == "GEL" ? amount / exchangeRate.Rate : amount * exchangeRate.Rate;
                 }
             }
-            else
-            {
-                throw new ValidationException("Cross-currency conversion is not supported.");
-            }
+            //var rate = await _exchangeRateService.GetExchangeRateAsync(destinationCurrency, date);
+            //if (rate == null)
+            //throw new NotFoundException("Exchange rate not found.");
+            //return amount / rate.Value;
+
+            var storedRate = await _exchangeRateService.GetExchangeRateAsync(destinationCurrency, date);
+            if (storedRate == null)
+                throw new Exception("Exchange rate not found in database.");
+
+            return originCurrency == "GEL" ? amount / storedRate : amount * storedRate;
         }
     }
+    
 }

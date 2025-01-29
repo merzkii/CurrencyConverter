@@ -27,9 +27,19 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task AddRateAsync(ExchangeRate rate)
+        public async Task AddRateAsync(IEnumerable<ExchangeRate> exchangeRates)
         {
-            await _context.ExchangeRates.AddAsync(rate);
+            foreach (var rate in exchangeRates)
+            {
+                var existingRate = await _context.ExchangeRates
+                    .FirstOrDefaultAsync(r => r.Currency == rate.Currency && r.Date == rate.Date);
+
+                if (existingRate == null)
+                {
+                    _context.ExchangeRates.Add(rate);
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
     }

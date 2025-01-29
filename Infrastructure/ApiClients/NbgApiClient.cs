@@ -1,15 +1,23 @@
 ﻿using Application.Responses;
 using Core;
+using Core.Exceptions;
+using Infrastructure.Repositories;
 using Newtonsoft.Json;
 
 public class NbgApiClient
 {
     
     private const string ApiUrl = "https://nbg.gov.ge/gw/api/ct/monetarypolicy/currencies/ka/json";
+    private readonly IExchangeRateRepository _exchangeRateRepository;
 
-   
+    public NbgApiClient(IExchangeRateRepository exchangeRateRepository)
+    {
+        _exchangeRateRepository = exchangeRateRepository;
+    }
+
     public async Task<IEnumerable<ExchangeRate>> FetchExchangeRatesAsync()
     {
+
         var exchangeRates = new List<ExchangeRate>();
         using (var client = new HttpClient())
         {
@@ -25,6 +33,7 @@ public class NbgApiClient
                     // Deserialize the JSON response to your chosen type (CurrencyData)
                     var currencies = JsonConvert.DeserializeObject<List<CurrencyData>>(responseContent)!;
                     exchangeRates = currencies.First().Currencies.Select(x => new ExchangeRate() { Currency = x.Code, Rate = x.Rate, Date = x.Date }).ToList();
+                    await _exchangeRateRepository.AddRateAsync(exchangeRates);
                 }
                 else{
                     return exchangeRates;
@@ -32,7 +41,7 @@ public class NbgApiClient
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                new NotFoundException("No Rates Are Available");
             }
         }
 
