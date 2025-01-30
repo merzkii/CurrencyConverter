@@ -13,13 +13,13 @@ namespace CurrencyConverter.Controllers
         private readonly IOperationRepository _operationRepository;
         private readonly NbgApiClient _bgApiClient;
 
-        public ConversionController(IOperationRepository operationRepository, IConversionService conversionService,IExchangeRateService exchangeRateService,NbgApiClient nbgApiClient, IExchangeRateRepository exchangeRateRepository)
+        public ConversionController(IOperationRepository operationRepository, IConversionService conversionService, IExchangeRateService exchangeRateService, NbgApiClient nbgApiClient, IExchangeRateRepository exchangeRateRepository)
         {
             _exchangeRateRepository = exchangeRateRepository;
             _bgApiClient = nbgApiClient;
             _conversionService = conversionService;
             _exchangeRateService = exchangeRateService;
-            _operationRepository = operationRepository; 
+            _operationRepository = operationRepository;
         }
 
         [HttpGet]
@@ -31,7 +31,7 @@ namespace CurrencyConverter.Controllers
 
             var exchangeRatesTask = await _bgApiClient.FetchExchangeRatesAsync();
             await _exchangeRateRepository.AddRateAsync(exchangeRatesTask);
-            var operations=await _operationRepository.GetOperationsAsync();
+            var operations = await _operationRepository.GetOperationsAsync();
             var operationViewModels = operations.Select(o => new OperationViewModel
             {
                 Id = o.Id,
@@ -40,15 +40,15 @@ namespace CurrencyConverter.Controllers
                 FromCurrency = o.FromCurrency,
                 ToCurrency = o.ToCurrency,
                 Amount = o.Amount,
-                ConvertedAmount=o.ConvertedAmount,
+                ConvertedAmount = o.ConvertedAmount,
                 Date = o.Date == DateTime.MinValue ? DateTime.Today : o.Date
-            }).ToList();
+            }).OrderByDescending(x => x.Date).ToList();
 
             var model = new ConversionViewModel
             {
                 Rate = _bgApiClient,
-                Operations= operationViewModels,
-                Date= DateTime.Today
+                Operations = operationViewModels,
+                Date = DateTime.Today
             };
 
             return View(model);
@@ -58,7 +58,7 @@ namespace CurrencyConverter.Controllers
         public async Task<IActionResult> Convert(string clientName, string personalNumber, string originCurrency, string destinationCurrency, decimal amount, DateTime? date)
         {
             DateTime conversionDate = date ?? DateTime.Now;
-            var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName,personalNumber, originCurrency, destinationCurrency, amount,conversionDate);
+            var convertedAmount = await _conversionService.ConvertCurrencyAsync(clientName, personalNumber, originCurrency, destinationCurrency, amount, conversionDate);
             var operations = await _operationRepository.GetOperationsAsync();
 
             var operationViewModels = operations.Select(o => new OperationViewModel
@@ -71,7 +71,7 @@ namespace CurrencyConverter.Controllers
                 Amount = o.Amount,
                 ConvertedAmount = o.ConvertedAmount,
                 Date = o.Date
-            }).ToList();
+            }).OrderByDescending(x => x.Date).ToList();
 
             var model = new ConversionViewModel
             {
@@ -85,7 +85,7 @@ namespace CurrencyConverter.Controllers
                 Operations = operationViewModels
 
             };
-            return View("index",model);
+            return View("index", model);
         }
     }
 }
