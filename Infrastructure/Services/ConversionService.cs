@@ -40,7 +40,7 @@ namespace Infrastructure.Services
             decimal convertedAmount = 0;
             var rate = 0m;
             var targetCurrency = destinationCurrency == GEL ? originCurrency : destinationCurrency;
-            if (exchangeRates.Any()&&date.Date==DateTime.Now)
+            if (exchangeRates.Any()&&date.Date==DateTime.Now.Date)
             {
                 var exchangeRate = exchangeRates.FirstOrDefault(x => x.Currency == targetCurrency);
 

@@ -29,10 +29,8 @@ namespace CurrencyConverter.Controllers
             //var rates = new NbgApiClient();
             //rates.FetchExchangeRatesAsync().Wait();
 
-            var exchangeRatesTask = _bgApiClient.FetchExchangeRatesAsync();
-            exchangeRatesTask.Wait();
-            var exchangeRates = exchangeRatesTask.Result;
-            await _exchangeRateRepository.AddRateAsync(exchangeRates);
+            var exchangeRatesTask = await _bgApiClient.FetchExchangeRatesAsync();
+            await _exchangeRateRepository.AddRateAsync(exchangeRatesTask);
             var operations=await _operationRepository.GetOperationsAsync();
             var operationViewModels = operations.Select(o => new OperationViewModel
             {
